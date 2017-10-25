@@ -101,25 +101,24 @@
     <script>
         let map = new AMap.Map('container');
         //周边搜索
-        let items = [];
+        let items = [];       // 初始化
         let val = '';
         let lietEle=document.getElementById('item_list');
-        map.setZoom(14);
+        map.setZoom(14);   // 设置层级
 
-        document.getElementById('btn').onclick = function () {
+        document.getElementById('btn').onclick = function () {  // 点击查询按钮时触发
             items=[];
-            lietEle.innerHTML=null;
+            lietEle.innerHTML=null;   
             val = document.getElementById('input').value;
 
-            map.plugin(['AMap.PlaceSearch'], function () {
+            map.plugin(['AMap.PlaceSearch'], function () {   // 地点搜索服务插件
                 let pla = new AMap.PlaceSearch({
-                    extensions: 'all'
+                    extensions: 'all'   //all，返回基本+详细信息
                 });
-                pla.searchNearBy(val, map.getCenter(), 3000);
-                AMap.event.addListener(pla, 'complete', function (e) {
-                    console.log(e);
-                    let pois = e.poiList.pois;
-                    let len = e.poiList.pois.length > 5 ? 5 : e.poiList.pois.length;
+                pla.searchNearBy(val, map.getCenter(), 3000);   //参数：（关键字，中心点，半径）
+                AMap.event.addListener(pla, 'complete', function (e) {  //当查询成功时触发此事件
+                    let pois = e.poiList.pois;   // 数据
+                    let len = e.poiList.pois.length > 5 ? 5 : e.poiList.pois.length;  // 最多只显示五条
                     for (let i = 0; i < len; i++) {
                         items.push(pois[i]['name']);
                     }
@@ -134,7 +133,7 @@
             this.items = items;
             this.list = lietEle;
         }
-        Render.prototype.addItem = function (data, i) {
+        Render.prototype.addItem = function (data, i) {   // 创建元素
             var ele = document.createElement('div');
             ele.className = 'item_' + i;
             ele.innerHTML = '<span>' + i + '</span>' + data;
