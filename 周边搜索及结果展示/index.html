@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>地图覆盖物</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+
+        .warp {
+            width: 1000px;
+            height: 600px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        #container {
+            width: 100%;
+            height: 100%
+        }
+
+        .itemwarp {
+            position: absolute;
+            left: 100px;
+            top: 100px;
+            width: 210px;
+            padding: 20px;
+            background-color: #cae1ff;
+        }
+
+        .form {
+            margin-bottom: 10px;
+        }
+
+        .form input {
+            height: 24px;
+            padding-left: 5px;
+        }
+
+        .form button {
+            height: 27px;
+            padding: 0 5px;
+        }
+
+        #item_list div {
+            line-height: 30px;
+            margin: 5px 0;
+            font-size: 14px;
+        }
+
+        #item_list div span {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border-radius: 50px;
+            text-align: center;
+            margin-right: 10px;
+            color: #fff;
+        }
+
+        #item_list .item_1 span {
+            background-color: #EE6969;
+        }
+
+        #item_list .item_2 span {
+            background-color: #F3B666;
+        }
+
+        #item_list .item_3 span {
+            background-color: #69EE7F;
+        }
+
+        #item_list .item_4 span {
+            background-color: #18F88F;
+        }
+
+        #item_list .item_5 span {
+            background-color: #69AEEE;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="warp">
+        <div id="container"></div>
+        <div class="itemwarp">
+            <div class="form">
+                <input type="text" placeholder="搜索" id="input" />
+                <button id="btn">搜索</button>
+            </div>
+            <div id="item_list"></div>
+        </div>
+
+    </div>
+    <script type="text/javascript" src="http://webapi.amap.com/maps?v=1.4.0&key=53cc5efcd0ca081402f9cef2f491df82"></script>
+    <script>
+        let map = new AMap.Map('container');
+        //周边搜索
+        let items = [];
+        let val = '';
+        let lietEle=document.getElementById('item_list');
+        map.setZoom(14);
+
+        document.getElementById('btn').onclick = function () {
+            items=[];
+            lietEle.innerHTML=null;
+            val = document.getElementById('input').value;
+
+            map.plugin(['AMap.PlaceSearch'], function () {
+                let pla = new AMap.PlaceSearch({
+                    extensions: 'all'
+                });
+                pla.searchNearBy(val, map.getCenter(), 3000);
+                AMap.event.addListener(pla, 'complete', function (e) {
+                    console.log(e);
+                    let pois = e.poiList.pois;
+                    let len = e.poiList.pois.length > 5 ? 5 : e.poiList.pois.length;
+                    for (let i = 0; i < len; i++) {
+                        items.push(pois[i]['name']);
+                    }
+                    new Render(items).showUI();
+                })
+            })
+
+        };
+
+
+        let Render = function (items) {
+            this.items = items;
+            this.list = lietEle;
+        }
+        Render.prototype.addItem = function (data, i) {
+            var ele = document.createElement('div');
+            ele.className = 'item_' + i;
+            ele.innerHTML = '<span>' + i + '</span>' + data;
+            this.list.appendChild(ele);
+        }
+        Render.prototype.showUI = function () {
+            for (var i = 0, n = this.items.length; i < n; i++) {
+                this.addItem(this.items[i], i + 1);
+            }
+        }
+    </script>
+</body>
+
+</html>
