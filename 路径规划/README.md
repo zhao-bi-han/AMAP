@@ -50,38 +50,59 @@
     
         })
 ```
-## 2、实例核心代码（还未优化）
+## 2、实例核心代码
 ```
-// 添加事件
-searchEle.onclick=()=>{
-     panelEle.innerHTML=null;
-    let startVal=startEle.value;   // 获取input框的值
-    let endVal=endEle.value;
-    if(startVal!=''&&endVal!=''){  
-        map.clearMap();    // 清除路线 
-        query(way,startVal, endVal);
-    }
+// 路径查询
+searchEle.onclick = () => {
+    panelEle.innerHTML = null;
+     new PathPlan({
+        startVal: startEle.value,  // 获取input框的值
+        endVal: endEle.value,
+        way:way,
+        cityName:cityName
+    })
 }
 
-const query=(ways,start,end)=>{
-    map.plugin([`AMap.${ways}`], ()=>{              
-    var w;
-    if(ways=="Walking"){   // 判断是 步行、驾车、公交
-        w = new AMap.Walking(obj)
-    }else if(ways=="Transfer"){
-        w = new AMap.Transfer(obj)
-    }else{
-        w = new AMap.Driving(obj)
+
+function PathPlan(options) {
+    this.opts = Object.assign({}, PathPlan.defaluts,options)
+    this.obj = {
+        map: map,
+        panel: "panel"    // 结果列表在此容器展示
     }
-    w.search([
-        { keyword: start,city:cityName},
-        { keyword: end ,city:cityName}
-    ])
-})
+    this.init();
 }
-const obj={
-    map: map,
-    panel: "panel"    // 结果列表在此容器展示
+// 设置默认参数
+PathPlan.defaluts = {
+    cityName: "保定市",
+    way: "Walking",
+    startVal: null,
+    endVal: null,
+}
+
+PathPlan.prototype.init = function() {
+  let  startVal=this.opts.startVal;
+  let  endVal=this.opts.endVal;
+    if (startVal != '' && endVal != '') {
+        map.clearMap();    // 清除路线 
+        this.query(this.opts.way, this.opts.cityName, startVal,endVal);
+    }
+}
+PathPlan.prototype.query =function (ways, cityName, start, end){
+    map.plugin([`AMap.${ways}`], () => {
+        let w;
+        if (ways == "Walking") {   // 判断是 步行、驾车、公交
+            w = new AMap.Walking(this.obj)
+        } else if (ways == "Transfer") {
+            w = new AMap.Transfer(this.obj)
+        } else {
+            w = new AMap.Driving(this.obj)
+        }
+        w.search([
+            { keyword: start, city: cityName },
+            { keyword: end, city: cityName }
+        ])
+    })
 }
 ```
 ## 3、效果图
