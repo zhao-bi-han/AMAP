@@ -1,5 +1,5 @@
 # 路线规划---- 步行 公交 驾车
-## 1、路径规划控件使用
+## 1、路径规划组件使用
 * 步行导航 —— `AMap.Walking`
 ```
     map.plugin(['AMap.Walking'], function () {
